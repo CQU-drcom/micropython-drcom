@@ -32,8 +32,7 @@ Dinu C. Gherman
 """
 
 
-__date__    = '2004-11-17'
-__version__ = 0.91 # Modernised by J. Hallén and L. Creighton for Pypy
+# Modernised by J. Hallén and L. Creighton for Pypy
 
 __metaclass__ = type # or genrpy won't work
 
@@ -44,25 +43,24 @@ import struct, copy
 # Bit-Manipulation helpers
 # ======================================================================
 
+toint = lambda x: x if isinstance(x, int) else int.from_bytes(x, 'little')
+
 def _bytelist2long(list):
     "Transform a list of characters into a list of longs."
-
     imax = len(list) // 4
     hl = [0] * imax
-
     j = 0
     i = 0
     while i < imax:
-        b0 = ord(list[j])
-        b1 = ord(list[j+1]) << 8
-        b2 = ord(list[j+2]) << 16
-        b3 = ord(list[j+3]) << 24
+        b0 = toint(list[j])
+        b1 = toint(list[j+1]) << 8
+        b2 = toint(list[j+2]) << 16
+        b3 = toint(list[j+3]) << 24
         hl[i] = b0 | b1 |b2 | b3
         i = i+1
         j = j+4
 
     return hl
-
 
 def _rotateLeft(x, n):
     "Rotate x (32 bit) left n bits circularly."
@@ -321,7 +319,6 @@ class MD5Type:
 
         # Append length (before padding).
         bits = _bytelist2long(self.input[:56]) + count
-
         self._transform(bits)
 
         # Store state in digest.

@@ -3,7 +3,7 @@
 import socket_drcom as socket
 import struct
 import time
-import md5_drcom as md5
+from md5_drcom import MD5Type as md5
 import sys
 import os
 import random_drcom as random
@@ -257,7 +257,7 @@ def checksum(s):
     ret = 1234
     x = 0
     for i in [x*4 for x in range(0, -(-len(s)//4))]:
-        ret ^= int(binascii.hexlify(s[i:i+4].ljust(4, b'\x00')[::-1]), 16)
+        ret ^= int.from_bytes(s[i:i+4], 'little')
     ret = (1968 * ret) & 0xffffffff
     return struct.pack('<I', ret)
 

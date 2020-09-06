@@ -1,8 +1,9 @@
 from time import sleep
 import threading
 from socket import *
+import usocket as _socket
 import os
-_socket = socket
+__socket = socket
 del socket
 
 
@@ -30,8 +31,20 @@ class timeoutKiller(threading.Thread):
 
 _timeout_methods = ('accept', 'bind', 'connect', 'sendall', 'sendto',
                     'recvfrom')
+
+
+class socketRecvfromFixed(__socket):
+    def __init__(self, *a, **b):
+        super().__init__(*a, **b)
+
+    def recvfrom(self, *a, **b):
+        s, addr = super().recvfrom(*a, **b)
+        addr = _socket.sockaddr(addr)
+        return (s, (_socket.inet_ntop(addr[0], addr[1]), addr[2]))
+
+
 exec("""
-class socket(_socket):
+class socket(socketRecvfromFixed):
     def __init__(self,*a,**b):
         super().__init__(*a, **b)
         self.killtimeout=0
@@ -41,13 +54,14 @@ class socket(_socket):
     def {method}(self, *a, **b):
         if self.killtimeout:
             killer = timeoutKiller(self.killtimeout)
-        super().{method}(*a,**b)
+        rst = super().{method}(*a,**b)
         if self.killtimeout:
             killer.release()
+        return rst
 """.format(method=method) for method in _timeout_methods)))
 """
 自动地生成类：
-class socket(socket_):
+class socket(socketRecvfromFixed):
     def __init__(self,*a,**b):
         super().__init__(*a, **b)
 
@@ -57,8 +71,9 @@ class socket(socket_):
     def {method}(self, *a, **b):
         if self.killtimeout:
             killer = timeoutKiller(self.killtimeout)
-        super().{method}(*a,**b)
+        rst = super().{method}(*a,**b)
         if self.killtimeout:
             killer.release()
+        return rst
 
 """

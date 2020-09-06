@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env micropython
 # -*- coding: utf-8 -*-
 import socket_drcom as socket
 import struct

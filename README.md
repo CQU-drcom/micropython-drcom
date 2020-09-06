@@ -2,7 +2,14 @@
 
 DrCOM 非官方客户端，修改自 [drcom-generic](https://github.com/drcoms/drcom-generic) 以使其能够在 OpenWrt 软件源中的 [micropython](https://github.com/micropython/micropython) 软件包中运行。
 
-（注：[micropython](https://github.com/micropython/micropython) 是一种 python 3.x 的实现，体积较小，相较 cpython 更适合在运行在一些存储空间非常有限的路由器上，但未实现 python 标准库中的全部功能。）
+## 关于 micropython
+
+[micropython](https://github.com/micropython/micropython) 是一种 python 3.x 的实现，体积较小，相较 cpython 更适合在运行在一些存储空间非常有限的路由器上，但未实现 python 标准库中的全部功能。
+
+在 OpenWrt 官方源中有两个包：
+
+- [micropython](https://openwrt.org/packages/pkgdata/micropython): micropython 解释器，x86 架构的`1.9.4-2`版安装后仅 365.1K
+- [micropython-lib](https://openwrt.org/packages/pkgdata/micropython-lib): 提供不完整实现的 python 标准库，`1.9.4-2`版安装后达 1.1M。[micropython](micropython) 文件夹中是被 drcom-generic 脚本依赖的部分，168K，可复制至`/usr/share/micropython`使用，以省下完整 micropython-lib 的其余部分所需的空间。
 
 **Testing needed**
 

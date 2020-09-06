@@ -5,6 +5,8 @@ import usocket as _socket
 import os
 __socket = socket
 del socket
+max_threads = 32
+thread_delay = 1 / max_threads
 
 
 class timeoutKiller(threading.Thread):
@@ -12,6 +14,7 @@ class timeoutKiller(threading.Thread):
         super().__init__()
         self.timeout = timeout
         self.ok = 0
+        sleep(thread_delay)
         self.start()
 
     def run(self):

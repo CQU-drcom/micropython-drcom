@@ -73,17 +73,21 @@ s.bind((bind_ip, 61440))
 s.setkilltimeout(3)
 
 SALT = ''
-IS_TEST = True
+IS_TEST = False
 
 # specified fields based on version
-CONF = "/etc/drcom.conf"
+CONF = "/etc/drcom_wired.conf"
 UNLIMITED_RETRY = True
 EXCEPTION = False
 DEBUG = False #log saves to file
 LOG_PATH = '/tmp/drcom_client.log'
+PID_ENABLE = True
+PID_PATH = '/run/var/drcom_client.pid'
 if IS_TEST:
     DEBUG = True
     LOG_PATH = 'drcom_client.log'
+if len(sys.argv) >= 2:
+    CONF = sys.argv[1]
 
 
 def log(*args, **kwargs):
@@ -456,13 +460,21 @@ def empty_socket_buffer():
         pass
     log('emptyed')
 def daemon():
-    with open('/var/run/jludrcom.pid','w') as f:
+    if not PID_ENABLE:
+        return
+    with open(PID_PATH,'w') as f:
         f.write(str(os.getpid()))
         
 def main():
     if not IS_TEST:
+        with open(CONF) as conf_file:
+            exec(conf_file.read(), globals())
+        for attr in ('CONTROLCHECKSTATUS', 'ADAPTERNUM', 'KEEP_ALIVE_VERSION', 'AUTH_VERSION', 'IPDOG'):
+            exec('global {attr}'.format(attr=attr))
+            if isinstance(eval(attr), str):
+                exec('{attr}={attr}.encode()'.format(attr=attr))
         daemon()
-        execfile(CONF, globals())
+
     log("auth svr: " + server + "\nusername: " + username + "\npassword: " + password + "\nmac: " + str(hex(mac))[:-1])
     log("bind ip: " + bind_ip)
     while True:

@@ -3,7 +3,7 @@ File under AGPL v3 License:
 
 Files under Python License:
   micropython/copy.py
-  micropythonstat.py
+  micropython/stat.py
   micropython/types.py
 
 Other files are under MIT License.

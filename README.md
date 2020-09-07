@@ -11,7 +11,7 @@ DrCOM 非官方客户端，修改自 [drcom-generic](https://github.com/drcoms/d
 在 OpenWrt 官方源中有两个包：
 
 - [micropython](https://openwrt.org/packages/pkgdata/micropython): micropython 解释器，x86 架构的`1.9.4-2`版安装后仅 365.1K
-- [micropython-lib](https://openwrt.org/packages/pkgdata/micropython-lib): 提供不完整实现的 python 标准库，`1.9.4-2`版安装后达 1.1M。[micropython](micropython) 文件夹中是被 drcom-generic 脚本依赖的部分，168K，可复制至`/usr/share/micropython`使用，以省下完整 micropython-lib 的其余部分所需的空间。
+- [micropython-lib](https://openwrt.org/packages/pkgdata/micropython-lib): 提供不完整实现的 python 标准库，`1.9.4-2`版安装后达 1.1M。[micropython](micropython) 文件夹中是被 drcom-generic 脚本依赖的部分，共 168K，将内容复制至 `/usr/share/micropython` 或与 [latest-wired-python3.py](latest-wired-python3.py) 置于同一目录来使用，以省下完整 micropython-lib 的其余部分所需的空间。
 
 以下文件用于补齐 drcom-generic 需要但 micropython 未实现的 python 标准库中的部分内容
 
@@ -19,9 +19,15 @@ DrCOM 非官方客户端，修改自 [drcom-generic](https://github.com/drcoms/d
 - [random\_drcom.py](random_drcom.py): `random.randint`的实现
 - [socket\_drcom.py](socket_drcom,py): 提供了处理 socket 连接超时的 workaround
 
+[latest-wired-python3.py](latest-wired-python3.py) 启动时默认会读取 `/etc/drcom_wired.conf` 作为配置文件，可通过传入文件路径作为参数来指定其他位置的配置文件。该配置文件与 drcom-generic 的 python2、python3 版以及 [dogcom](https://github.com/mchome/dogcom) 的均兼容。
+
 ## 连接超时时的行为
 
 OpenWrt 官方软件源的部分或全部架构下的 micropython 的 socket 类中无`settimeout`方法。此处 [socket\_drcom.py](socket_drcom.py) 提供了一种 workaround：在超时时杀掉自己。
+
+## 配置文件
+
+
 
 ## 感谢
 

@@ -19,15 +19,30 @@ DrCOM 非官方客户端，修改自 [drcom-generic](https://github.com/drcoms/d
 - [random\_drcom.py](random_drcom.py): `random.randint`的实现
 - [socket\_drcom.py](socket_drcom,py): 提供了处理 socket 连接超时的 workaround
 
-[latest-wired-python3.py](latest-wired-python3.py) 启动时默认会读取 `/etc/drcom_wired.conf` 作为配置文件，可通过传入文件路径作为参数来指定其他位置的配置文件。该配置文件与 drcom-generic 的 python2、python3 版以及 [dogcom](https://github.com/mchome/dogcom) 的均兼容。
+## 与原版 drcom-generic 脚本的差别
 
-## 连接超时时的行为
+### socket 传输超时处理
 
-OpenWrt 官方软件源的部分或全部架构下的 micropython 的 socket 类中无`settimeout`方法。此处 [socket\_drcom.py](socket_drcom.py) 提供了一种 workaround：在超时时杀掉自己。
+OpenWrt 官方软件源的部分或全部架构（未作考究）下的 micropython 的 socket 类中无`settimeout`方法。此处 [socket\_drcom.py](socket_drcom.py) 提供了一种 workaround：在超时时杀掉自己。
 
-## 配置文件
+不再试图捕获超时的异常。
 
+清空 socket buffer 的方法从捕获超时异常改为使用非阻塞 socket。
 
+### 配置文件
+
+（一定程度是为了便于打包成 ipk）[latest-wired-python3.py](latest-wired-python3.py) 启动时默认会读取 `/etc/drcom_wired.conf` 作为配置文件，亦可通过传入文件路径作为参数来指定其他位置的配置文件，从而更改登陆信息不需要更改脚本源码。兼容 drcom-generic 的 python2、python3 版以及 [dogcom](https://github.com/mchome/dogcom) 的配置。
+
+除了登陆信息，另有有以下配置项：
+
+- `PID_ENABLE`: `bool`，默认`True`，是否启用 pid 文件
+- `PID_PATH`: `str`，默认`'/var/log/drcom.conf'`，pid 文件路径
+- `DEBUG`: `bool`，默认`False`，是否开启日志文件
+- `LOG_PATH`: `str`，默认`'/tmp/drcom_client.log'`，日志文件路径
+
+### 错误信息
+
+micropython 的报错没有 cpython 那么详细
 
 ## 感谢
 

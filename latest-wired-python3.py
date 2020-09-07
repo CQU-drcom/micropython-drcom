@@ -9,7 +9,7 @@ import sys
 import os
 import random_drcom as random
 import binascii
-
+import uerrno
 
 # CONFIG
 server = "192.168.100.150"
@@ -444,14 +444,14 @@ def empty_socket_buffer():
     s.setblocking(False)
     try:
         while True:
-            data, address = s.recvfrom(4096)
+            data, address = s.recvfrom(1024)
             log('recived sth unexpected', str(binascii.hexlify(data))[2:][:-1])
-            if data == '' or len(data) < 4096:
-                break
-    except:
-        # get exception means it has done.
-        log('exception in empty_socket_buffer')
-        pass
+    except OSError as err:
+        if uerrno.EAGAIN  == err.args[0]:
+            # get this exception means it has done.
+            log('exception in empty_socket_buffer')
+        else:
+            raise(err)
     s.setblocking(True)
     log('emptyed')
 def daemon():

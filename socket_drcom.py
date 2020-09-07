@@ -59,9 +59,11 @@ class socket(socketRecvfromFixed):
     def {method}(self, *a, **b):
         if self.killtimeout:
             killer = timeoutKiller(self.killtimeout)
-        rst = super().{method}(*a,**b)
-        if self.killtimeout:
-            killer.release()
+        try:
+            rst = super().{method}(*a,**b)
+        finally:
+            if self.killtimeout:
+                killer.release()
         return rst
 """.format(method=method) for method in _timeout_methods)))
 """
@@ -80,8 +82,11 @@ class socket(socketRecvfromFixed):
     def {method}(self, *a, **b):
         if self.killtimeout:
             killer = timeoutKiller(self.killtimeout)
-        rst = super().{method}(*a,**b)
-        if self.killtimeout:
-            killer.release()
+        try:
+            rst = super().{method}(*a,**b)
+        finally:
+            if self.killtimeout:
+                killer.release()
         return rst
+
 """

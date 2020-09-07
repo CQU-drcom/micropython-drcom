@@ -15,7 +15,7 @@ DrCOM 非官方客户端，修改自 [drcom-generic](https://github.com/drcoms/d
 
 以下文件用于补齐 drcom-generic 需要但 micropython 未实现的 python 标准库中的部分内容
 
-- [md5\_drcom.py](md5_drcom.py): `hashlib.md5`的纯 python 实现，来自 pypy
+- [md5\_drcom.py](md5_drcom.py): `hashlib.md5`的纯 python 实现，来自 pypy，为了与 python 3.x 兼容作了细微更改
 - [random\_drcom.py](random_drcom.py): `random.randint`的实现
 - [socket\_drcom.py](socket_drcom,py): 提供了处理 socket 连接超时的 workaround
 
@@ -31,7 +31,7 @@ OpenWrt 官方软件源的部分或全部架构（未作考究）下的 micropyt
 
 ### 配置文件
 
-（一定程度是为了便于打包成 ipk）[latest-wired-python3.py](latest-wired-python3.py) 启动时默认会读取 `/etc/drcom_wired.conf` 作为配置文件，亦可通过传入文件路径作为参数来指定其他位置的配置文件，从而更改登陆信息不需要更改脚本源码。兼容 drcom-generic 的 python2、python3 版以及 [dogcom](https://github.com/mchome/dogcom) 的配置。
+（一定程度是为了便于打包成 ipk）此修改版 [latest-wired-python3.py](latest-wired-python3.py) 启动时默认会读取 `/etc/drcom_wired.conf` 作为配置文件，亦可通过传入文件路径作为参数来指定其他位置的配置文件，从而更改登陆信息不需要更改脚本源码。兼容 drcom-generic 的 python2、python3 版以及 [dogcom](https://github.com/mchome/dogcom) 的配置。
 
 除了登陆信息，另有有以下配置项：
 

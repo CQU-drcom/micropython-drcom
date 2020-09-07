@@ -2,6 +2,6 @@ import os
 
 
 def randint(a, b):
-    assert a - b + 1 < 0xFFFFFFFF
+    assert b - a + 1 < 0xFFFFFFFF
     rint = int.from_bytes(os.urandom(4), 'little')
-    return a + rint % (a - b + 1)
+    return a + rint % (b - a + 1)

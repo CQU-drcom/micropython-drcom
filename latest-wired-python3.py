@@ -1,6 +1,7 @@
 #!/usr/bin/env micropython
 # -*- coding: utf-8 -*-
 import socket_drcom as socket
+import uselect
 import struct
 import time
 from md5_drcom import MD5Type as md5
@@ -119,14 +120,9 @@ def challenge(svr,ran):
     while True:
         t = struct.pack("<H", int(ran)%(0xFFFF))
         s.sendto(b"\x01\x02" + t + b"\x09" + b"\x00"*15, (svr, 61440))
-        try:
-            data, address = s.recvfrom(1024)
-            log('[challenge] recv', str(binascii.hexlify(data))[2:][:-1])
-        except Exception as e:
-            raise(e)
-            log('[challenge] timeout, retrying...')
-            continue
-        
+        data, address = s.recvfrom(1024)
+        log('[challenge] recv', str(binascii.hexlify(data))[2:][:-1])
+
         if address == (svr, 61440):
             break
         else:
@@ -231,31 +227,28 @@ def keep_alive2(*args):
     
     i = svr_num
     while True:
-        try:
-            time.sleep(20)
-            keep_alive1(*args)
-            ran += random.randint(1, 10)   
-            packet = keep_alive_package_builder(i, dump(ran), tail, 1, False)
-            #log('DEBUG: keep_alive2,packet 4\n', str(binascii.hexlify(packet))[2:][:-1])
-            log('[keep_alive2] send',str(i), str(binascii.hexlify(packet))[2:][:-1])
-            s.sendto(packet, (svr, 61440))
-            data, address = s.recvfrom(1024)
-            log('[keep_alive2] recv', str(binascii.hexlify(data))[2:][:-1])
-            tail = data[16:20]
-            #log('DEBUG: keep_alive2,packet 4 return\n', str(binascii.hexlify(data))[2:][:-1])
-        
-            ran += random.randint(1, 10)   
-            packet = keep_alive_package_builder(i+1, dump(ran), tail, 3, False)
-            #log('DEBUG: keep_alive2,packet 5\n', str(binascii.hexlify(packet))[2:][:-1])
-            s.sendto(packet, (svr, 61440))
-            log('[keep_alive2] send', str(i+1), str(binascii.hexlify(packet))[2:][:-1])
-            data, address = s.recvfrom(1024)
-            log('[keep_alive2] recv', str(binascii.hexlify(data))[2:][:-1])
-            tail = data[16:20]
-            #log('DEBUG: keep_alive2,packet 5 return\n', str(binascii.hexlify(data))[2:][:-1])
-            i = (i+2) % 127 #must less than 128 ,else the keep_alive2() couldn't receive anything.
-        except:
-            pass
+        time.sleep(20)
+        keep_alive1(*args)
+        ran += random.randint(1, 10)
+        packet = keep_alive_package_builder(i, dump(ran), tail, 1, False)
+        #log('DEBUG: keep_alive2,packet 4\n', str(binascii.hexlify(packet))[2:][:-1])
+        log('[keep_alive2] send',str(i), str(binascii.hexlify(packet))[2:][:-1])
+        s.sendto(packet, (svr, 61440))
+        data, address = s.recvfrom(1024)
+        log('[keep_alive2] recv', str(binascii.hexlify(data))[2:][:-1])
+        tail = data[16:20]
+        #log('DEBUG: keep_alive2,packet 4 return\n', str(binascii.hexlify(data))[2:][:-1])
+
+        ran += random.randint(1, 10)
+        packet = keep_alive_package_builder(i+1, dump(ran), tail, 3, False)
+        #log('DEBUG: keep_alive2,packet 5\n', str(binascii.hexlify(packet))[2:][:-1])
+        s.sendto(packet, (svr, 61440))
+        log('[keep_alive2] send', str(i+1), str(binascii.hexlify(packet))[2:][:-1])
+        data, address = s.recvfrom(1024)
+        log('[keep_alive2] recv', str(binascii.hexlify(data))[2:][:-1])
+        tail = data[16:20]
+        #log('DEBUG: keep_alive2,packet 5 return\n', str(binascii.hexlify(data))[2:][:-1])
+        i = (i+2) % 127 #must less than 128 ,else the keep_alive2() couldn't receive anything.
 
 def checksum(s):
     ret = 1234
@@ -448,16 +441,18 @@ def keep_alive1(salt, tail, pwd, svr):
 def empty_socket_buffer():
 #empty buffer for some fucking schools
     log('starting to empty socket buffer')
+    s.setblocking(False)
     try:
         while True:
-            data, address = s.recvfrom(1024)
+            data, address = s.recvfrom(4096)
             log('recived sth unexpected', str(binascii.hexlify(data))[2:][:-1])
-            if s == '':
+            if data == '' or len(data) < 4096:
                 break
     except:
         # get exception means it has done.
         log('exception in empty_socket_buffer')
         pass
+    s.setblocking(True)
     log('emptyed')
 def daemon():
     if not PID_ENABLE:

@@ -53,6 +53,8 @@ class socket(socketRecvfromFixed):
         self.killtimeout=0
     def setkilltimeout(self, timeout):
         self.killtimeout=timeout
+    def getkilltimeout(self):
+        return self.killtimeout
 """ + "".join(("""
     def {method}(self, *a, **b):
         if self.killtimeout:
@@ -67,9 +69,13 @@ class socket(socketRecvfromFixed):
 class socket(socketRecvfromFixed):
     def __init__(self,*a,**b):
         super().__init__(*a, **b)
+        self.killtimeout=0
 
-    def setkilltimneout(self, timeout):
+    def setkilltimeout(self, timeout):
         self.killtimeout=timeout
+
+    def getkilltimeout(self):
+        return self.killtimeout
 
     def {method}(self, *a, **b):
         if self.killtimeout:
@@ -78,5 +84,4 @@ class socket(socketRecvfromFixed):
         if self.killtimeout:
             killer.release()
         return rst
-
 """

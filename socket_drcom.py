@@ -46,47 +46,41 @@ class socketRecvfromFixed(__socket):
         return (s, (_socket.inet_ntop(addr[0], addr[1]), addr[2]))
 
 
-exec("""
 class socket(socketRecvfromFixed):
-    def __init__(self,*a,**b):
+    def __init__(self, *a, **b):
         super().__init__(*a, **b)
-        self.killtimeout=0
-    def setkilltimeout(self, timeout):
-        self.killtimeout=timeout
-    def getkilltimeout(self):
-        return self.killtimeout
-""" + "".join(("""
-    def {method}(self, *a, **b):
-        if self.killtimeout:
-            killer = timeoutKiller(self.killtimeout)
-        try:
-            rst = super().{method}(*a,**b)
-        finally:
-            if self.killtimeout:
-                killer.release()
-        return rst
-""".format(method=method) for method in _timeout_methods)))
-"""
-自动地生成类：
-class socket(socketRecvfromFixed):
-    def __init__(self,*a,**b):
-        super().__init__(*a, **b)
-        self.killtimeout=0
+        self.killtimeout = 0
 
     def setkilltimeout(self, timeout):
-        self.killtimeout=timeout
+        self.killtimeout = timeout
 
     def getkilltimeout(self):
         return self.killtimeout
 
-    def {method}(self, *a, **b):
+    def _run_with_timeout(self, func, a, b):
         if self.killtimeout:
             killer = timeoutKiller(self.killtimeout)
         try:
-            rst = super().{method}(*a,**b)
+            rst = func(*a, **b)
         finally:
             if self.killtimeout:
                 killer.release()
         return rst
 
-"""
+    def accept(self, *a, **b):
+        return self._run_with_timeout(super().accept, a, b)
+
+    def bind(self, *a, **b):
+        return self._run_with_timeout(super().bind, a, b)
+
+    def connect(self, *a, **b):
+        return self._run_with_timeout(super().connect, a, b)
+
+    def sendall(self, *a, **b):
+        return self._run_with_timeout(super().sendall, a, b)
+
+    def sendto(self, *a, **b):
+        return self._run_with_timeout(super().sendto, a, b)
+
+    def recvfrom(self, *a, **b):
+        return self._run_with_timeout(super().recvfrom, a, b)

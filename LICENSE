@@ -1,5 +1,5 @@
 File under AGPL v3 License:
-  latest-wired-python3.py
+  latest-wired-micropython.py
 
 Files under Python License:
   micropython/copy.py

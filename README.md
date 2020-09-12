@@ -46,4 +46,4 @@ micropython 的报错没有 cpython 那么详细
 
 ## 感谢
 
-感谢 [drcom-generic](https://github.com/micropython/micropython) 项目和 [https://github.com/micropython/micropython](micropython) 项目。
+感谢 [drcom-generic](https://github.com/micropython/micropython) 项目和 [micropython](https://github.com/micropython/micropython) 项目。

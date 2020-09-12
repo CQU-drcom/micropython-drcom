@@ -11,7 +11,7 @@ DrCOM 非官方客户端，修改自 [drcom-generic](https://github.com/drcoms/d
 在 OpenWrt 官方源中有两个包：
 
 - [micropython](https://openwrt.org/packages/pkgdata/micropython): micropython 解释器，x86 架构的`1.9.4-2`版安装后仅 365.1K
-- [micropython-lib](https://openwrt.org/packages/pkgdata/micropython-lib): 提供不完整实现的 python 标准库，`1.9.4-2`版安装后达 1.1M。[micropython](micropython) 文件夹中是被 drcom-generic 脚本依赖的部分，共 168K，将内容复制至 `/usr/lib/micropython` 或与 [latest-wired-python3.py](latest-wired-python3.py) 置于同一目录来使用，以省下完整 micropython-lib 的其余部分所需的空间。
+- [micropython-lib](https://openwrt.org/packages/pkgdata/micropython-lib): 提供不完整实现的 python 标准库，`1.9.4-2`版安装后达 1.1M。[micropython](micropython) 文件夹中是被 drcom-generic 脚本依赖的部分，共 168K，将内容复制至 `/usr/lib/micropython` 或与 [latest-wired-micropython.py](latest-wired-micropython.py) 置于同一目录来使用，以省下完整 micropython-lib 的其余部分所需的空间。
 
 以下文件用于补齐 drcom-generic 需要但 micropython 未实现的 python 标准库中的部分内容
 
@@ -31,7 +31,7 @@ OpenWrt 官方软件源的部分或全部架构（未作考究）下的 micropyt
 
 ### 配置文件
 
-（一定程度是为了便于打包成 ipk）此修改版 [latest-wired-python3.py](latest-wired-python3.py) 启动时默认会读取 `/etc/drcom_wired.conf` 作为配置文件，亦可通过传入文件路径作为参数来指定其他位置的配置文件，从而更改登陆信息不需要更改脚本源码。兼容 drcom-generic 的 python2、python3 版以及 [dogcom](https://github.com/mchome/dogcom) 的配置。
+（一定程度是为了便于打包成 ipk）[latest-wired-micropython.py](latest-wired-micropython.py) 启动时默认会读取 `/etc/drcom_wired.conf` 作为配置文件，亦可通过传入文件路径作为参数来指定其他位置的配置文件，从而更改登陆信息不需要更改脚本源码。兼容 drcom-generic 的 python2、python3 版以及 [dogcom](https://github.com/mchome/dogcom) 的配置。
 
 除了登陆信息，另有有以下配置项：
 

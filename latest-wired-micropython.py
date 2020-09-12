@@ -483,5 +483,6 @@ def main():
       keep_alive1(SALT, package_tail, password, server)
       keep_alive2(SALT, package_tail, password, server)
 
+socket.log = log
 if __name__ == "__main__":
     main()

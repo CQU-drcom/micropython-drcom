@@ -7,6 +7,7 @@ __socket = socket
 del socket
 max_threads = 32
 thread_delay = 1 / max_threads
+log = lambda x: print(x)
 
 
 class timeoutKiller(threading.Thread):
@@ -25,7 +26,7 @@ class timeoutKiller(threading.Thread):
                 return
         sleep(self.timeout - count)
         if not self.ok:
-            print("Socket timeout!")
+            log("Socket timeout! Kill drcom.")
             os.kill(os.getpid(), 15)
 
     def release(self):

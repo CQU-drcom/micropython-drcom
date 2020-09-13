@@ -467,7 +467,7 @@ def main():
         for attr in ('CONTROLCHECKSTATUS', 'ADAPTERNUM', 'KEEP_ALIVE_VERSION', 'AUTH_VERSION', 'IPDOG'):
             exec('global {attr}'.format(attr=attr))
             if isinstance(eval(attr), str):
-                exec('{attr}={attr}.encode()'.format(attr=attr))
+                exec('{attr}=bytes(ord(i) for i in {attr})'.format(attr=attr))
         daemon()
 
     log("auth svr: " + server + "\nusername: " + username + "\npassword: " + password + "\nmac: " + str(hex(mac))[:-1])

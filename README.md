@@ -2,6 +2,8 @@
 
 DrCOM 非官方客户端，修改自 [drcom-generic](https://github.com/drcoms/drcom-generic) 以使其能够在 OpenWrt 软件源中的 [micropython](https://github.com/micropython/micropython) 软件包中运行。
 
+另有 opkg 进行打包于 [openwrt](openwrt)。
+
 **WIP & Testing needed**
 
 ## 关于 micropython

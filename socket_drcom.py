@@ -26,7 +26,7 @@ class timeoutKiller(threading.Thread):
                 return
         sleep(self.timeout - count)
         if not self.ok:
-            log("Socket timeout! Kill drcom.")
+            log('[socket]', "Socket timeout! Kill drcom.")
             os.kill(os.getpid(), 15)
 
     def release(self):

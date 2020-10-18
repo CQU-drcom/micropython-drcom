@@ -38,7 +38,7 @@ OpenWrt 官方软件源的部分或全部架构（未作考究）下的 micropyt
 除了登陆信息，另有有以下配置项：
 
 - `PID_ENABLE`: `bool`，默认`True`，是否启用 pid 文件
-- `PID_PATH`: `str`，默认`'/var/log/drcom.conf'`，pid 文件路径
+- `PID_PATH`: `str`，默认`'/var/run/drcom.pid'`，pid 文件路径
 - `DEBUG`: `bool`，默认`False`，是否开启日志文件
 - `LOG_PATH`: `str`，默认`'/tmp/drcom_client.log'`，日志文件路径
 

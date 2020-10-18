@@ -83,7 +83,7 @@ EXCEPTION = False
 DEBUG = False #log saves to file
 LOG_PATH = '/tmp/drcom_client.log'
 PID_ENABLE = True
-PID_PATH = '/run/var/drcom_client.pid'
+PID_PATH = '/var/run/drcom.pid'
 if IS_TEST:
     DEBUG = True
     LOG_PATH = 'drcom_client.log'

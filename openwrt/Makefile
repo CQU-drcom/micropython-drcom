@@ -1,7 +1,7 @@
 include $(TOPDIR)/rules.mk
 
 PKG_NAME:=micropython-drcom
-PKG_RELEASE:=2
+PKG_RELEASE:=3
 PKG_LICENSE:=AGPL-3.0
 PKG_LICENSE_FILE:=LICENSE.md
 PKG_MAINTAINER:=Hagb <hagb_green@qq.com>

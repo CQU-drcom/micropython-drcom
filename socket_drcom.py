@@ -1,40 +1,27 @@
-from time import sleep
-import threading
 from socket import *
 import usocket as _socket
 import os
+import signal
+import ffilib
+
+alarm = ffilib.libc().func("I", "alarm", "I")
 __socket = socket
 del socket
-max_threads = 32
-thread_delay = 1 / max_threads
 log = lambda x: print(x)
-
-
-class timeoutKiller(threading.Thread):
-    def __init__(self, timeout):
-        super().__init__()
-        self.timeout = timeout
-        self.ok = 0
-        sleep(thread_delay)
-        self.start()
-
-    def run(self):
-        count = int(self.timeout)
-        for i in range(count):
-            sleep(1)
-            if self.ok:
-                return
-        sleep(self.timeout - count)
-        if not self.ok:
-            log('[socket]', "Socket timeout! Kill drcom.")
-            os.kill(os.getpid(), 15)
-
-    def release(self):
-        self.ok = 1
-
 
 _timeout_methods = ('accept', 'bind', 'connect', 'sendall', 'sendto',
                     'recvfrom')
+
+
+class timeout(OSError):
+    pass
+
+
+def timeout_handler(sig):
+    raise timeout()
+
+
+signal.signal(14, timeout_handler)
 
 
 class socketRecvfromFixed(__socket):
@@ -53,19 +40,15 @@ class socket(socketRecvfromFixed):
         self.killtimeout = 0
 
     def setkilltimeout(self, timeout):
-        self.killtimeout = timeout
+        self.killtimeout = int(timeout)
 
     def getkilltimeout(self):
         return self.killtimeout
 
     def _run_with_timeout(self, func, a, b):
-        if self.killtimeout:
-            killer = timeoutKiller(self.killtimeout)
-        try:
-            rst = func(*a, **b)
-        finally:
-            if self.killtimeout:
-                killer.release()
+        alarm(self.killtimeout)
+        rst = func(*a, **b)
+        alarm(0)
         return rst
 
     def accept(self, *a, **b):

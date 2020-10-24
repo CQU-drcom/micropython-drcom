@@ -25,9 +25,9 @@ DrCOM 非官方客户端，修改自 [drcom-generic](https://github.com/drcoms/d
 
 ### socket 传输超时处理
 
-OpenWrt 官方软件源的部分或全部架构（未作考究）下的 micropython 的 socket 类中无`settimeout`方法。此处 [socket\_drcom.py](socket_drcom.py) 提供了一种 workaround：在超时时杀掉自己，并输出`Socket timeout! Kill drcom.`（如果设置了保存日志，也会写到日志里）。
+OpenWrt 官方软件源的部分或全部架构（未作考究）下的 micropython 的 socket 类中无`settimeout`方法。此处 [socket\_drcom.py](socket_drcom.py) 使用了另外一种方法：通过设置 `alarm` 系统调用，在超时时用信号处理机制抛出 `timeout` 异常。
 
-不再试图捕获超时的异常。
+不再试图捕获超时的异常，因此超时后程序会退出。
 
 清空 socket buffer 的方法从捕获超时异常改为使用非阻塞 socket。
 

@@ -1,2 +1,2 @@
 #!/bin/sh
-exec micropython /usr/lib/micropython-drcom/latest-wired-micropython.py $@
+exec micropython /usr/lib/micropython-drcom/latest-wired-micropython.py "$@"

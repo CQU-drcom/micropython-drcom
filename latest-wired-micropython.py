@@ -38,6 +38,10 @@ nic_name = ''  #Indicate your nic, e.g. 'eth0.2'.nic_name
 bind_ip = '0.0.0.0'
 
 
+class NeedRelogin(Exception):
+    pass
+
+
 class ChallengeException(Exception):
     def __init__(self):
         pass
@@ -46,6 +50,7 @@ class ChallengeException(Exception):
 class LoginException(Exception):
     def __init__(self):
         pass
+
 
 SALT = ''
 IS_TEST = False
@@ -438,8 +443,12 @@ def keep_alive1(salt, tail, pwd, svr):
         if data[:1] == b'\x07':
             break
         else:
-            log('[keep-alive1]recv/not expected',
-                str(binascii.hexlify(data))[2:][:-1])
+            hexstr = str(binascii.hexlify(data))[2:][:-1]
+            log('[keep-alive1]recv/not expected', hexstr)
+            if hexstr.endswith('bcecb2e2b7a2cfd6203320b4ce2c203320b4cebaf3b4a6'
+                               'c0ed202c20d2c6b6afd6d5b6cb203e20312c20'):
+                log('[keep-alive1] Need to relogin now, or will be kicked!')
+                raise NeedRelogin
     log('[keep-alive1] recv', str(binascii.hexlify(data))[2:][:-1])
 
 
@@ -482,23 +491,28 @@ def main():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     # s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     if nic_name:
-        s.setsockopt(socket.SOL_SOCKET, 25, str(nic_name + '\0').encode('utf-8'))
+        s.setsockopt(socket.SOL_SOCKET, 25,
+                     str(nic_name + '\0').encode('utf-8'))
     s.bind((bind_ip, 61440))
     s.setkilltimeout(3)
 
-    log("auth svr: " + server + "\nusername: " + username + "\npassword: " +
-        password + "\nmac: " + str(hex(mac))[:-1])
-    log("bind ip: " + bind_ip)
     while True:
-        try:
-            package_tail = login(username, password, server)
-        except LoginException:
-            continue
-        log('package_tail', str(binascii.hexlify(package_tail))[2:][:-1])
-        #keep_alive1 is fucking bullshit!
-        empty_socket_buffer()
-        keep_alive1(SALT, package_tail, password, server)
-        keep_alive2(SALT, package_tail, password, server)
+        log("auth svr: " + server + "\nusername: " + username +
+            "\npassword: " + password + "\nmac: " + str(hex(mac))[:-1])
+        log("bind ip: " + bind_ip)
+        while True:
+            try:
+                package_tail = login(username, password, server)
+            except LoginException:
+                continue
+            log('package_tail', str(binascii.hexlify(package_tail))[2:][:-1])
+            #keep_alive1 is fucking bullshit!
+            empty_socket_buffer()
+            try:
+                keep_alive1(SALT, package_tail, password, server)
+            except NeedRelogin:
+                break
+            keep_alive2(SALT, package_tail, password, server)
 
 
 socket.log = log

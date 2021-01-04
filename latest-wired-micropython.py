@@ -47,38 +47,6 @@ class LoginException(Exception):
     def __init__(self):
         pass
 
-
-def bind_nic():
-    try:
-        import fcntl
-
-        def get_ip_address(ifname):
-            s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-            return socket.inet_ntoa(
-                fcntl.ioctl(
-                    s.fileno(),
-                    0x8915,  # SIOCGIFADDR
-                    struct.pack('256s', ifname[:15]))[20:24])
-
-        return get_ip_address(nic_name)
-    except ImportError as e:
-        print('Indicate nic feature need to be run under Unix based system.')
-        return '0.0.0.0'
-    except IOError as e:
-        print(nic_name + 'is unacceptable !')
-        return '0.0.0.0'
-    finally:
-        return '0.0.0.0'
-
-
-if nic_name != '':
-    bind_ip = bind_nic()
-
-s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-# s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-s.bind((bind_ip, 61440))
-s.setkilltimeout(3)
-
 SALT = ''
 IS_TEST = False
 
@@ -501,6 +469,7 @@ def daemon():
 
 
 def main():
+    global s
     if not IS_TEST:
         with open(CONF) as conf_file:
             exec(conf_file.read(), globals())
@@ -510,6 +479,12 @@ def main():
             if isinstance(eval(attr), str):
                 exec('{attr}=bytes(ord(i) for i in {attr})'.format(attr=attr))
         daemon()
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    # s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    if nic_name:
+        s.setsockopt(socket.SOL_SOCKET, 25, str(nic_name + '\0').encode('utf-8'))
+    s.bind((bind_ip, 61440))
+    s.setkilltimeout(3)
 
     log("auth svr: " + server + "\nusername: " + username + "\npassword: " +
         password + "\nmac: " + str(hex(mac))[:-1])

@@ -41,6 +41,7 @@ OpenWrt 官方软件源的部分或全部架构（未作考究）下的 micropyt
 - `PID_PATH`: `str`，默认`'/var/run/drcom.pid'`，pid 文件路径
 - `DEBUG`: `bool`，默认`False`，是否开启日志文件
 - `LOG_PATH`: `str`，默认`'/tmp/drcom_client.log'`，日志文件路径
+- `nic_name`: `str`，默认为空（遵循系统路由），指定登陆拨号的网卡名
 
 ### 错误信息
 

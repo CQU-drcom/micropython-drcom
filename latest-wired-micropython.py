@@ -445,8 +445,7 @@ def keep_alive1(salt, tail, pwd, svr):
         else:
             hexstr = str(binascii.hexlify(data))[2:][:-1]
             log('[keep-alive1]recv/not expected', hexstr)
-            if hexstr.endswith('bcecb2e2b7a2cfd6203320b4ce2c203320b4cebaf3b4a6'
-                               'c0ed202c20d2c6b6afd6d5b6cb203e20312c20'):
+            if 'bcecb2e2b7a2cfd6203320b4ce2c203320b4cebaf3b4a6c0ed' in hexstr:
                 log('[keep-alive1] Need to relogin now, or will be kicked!')
                 raise NeedRelogin
     log('[keep-alive1] recv', str(binascii.hexlify(data))[2:][:-1])

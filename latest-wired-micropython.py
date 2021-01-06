@@ -508,9 +508,9 @@ def main():
             empty_socket_buffer()
             try:
                 keep_alive1(SALT, package_tail, password, server)
+                keep_alive2(SALT, package_tail, password, server)
             except NeedRelogin:
                 break
-            keep_alive2(SALT, package_tail, password, server)
 
 
 socket.log = log

@@ -1,7 +1,6 @@
 #!/usr/bin/env micropython
 # -*- coding: utf-8 -*-
 import socket_drcom as socket
-import uselect
 import struct
 import time
 from md5_drcom import MD5Type as md5

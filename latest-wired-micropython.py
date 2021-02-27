@@ -75,6 +75,10 @@ def log(*args, **kwargs):
     if DEBUG:
         with open(LOG_PATH, 'a') as f:
             f.write(s + '\n')
+    if 'bcecb2e2b7a2cfd6203320b4ce2c203320b4cebaf3b4a6c0ed' in s:
+        log('[auto-relogin] Need to relogin now, or will be kicked!')
+        raise NeedRelogin
+
 
 
 def md5sum(s):
@@ -442,11 +446,7 @@ def keep_alive1(salt, tail, pwd, svr):
         if data[:1] == b'\x07':
             break
         else:
-            hexstr = str(binascii.hexlify(data))[2:][:-1]
-            log('[keep-alive1]recv/not expected', hexstr)
-            if 'bcecb2e2b7a2cfd6203320b4ce2c203320b4cebaf3b4a6c0ed' in hexstr:
-                log('[keep-alive1] Need to relogin now, or will be kicked!')
-                raise NeedRelogin
+            log('[keep-alive1]recv/not expected', str(binascii.hexlify(data))[2:][:-1])
     log('[keep-alive1] recv', str(binascii.hexlify(data))[2:][:-1])
 
 

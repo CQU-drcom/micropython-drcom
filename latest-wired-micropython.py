@@ -9,6 +9,7 @@ import os
 import random_drcom as random
 import binascii
 import uerrno
+import ure
 
 # CONFIG
 server = "192.168.100.150"
@@ -68,14 +69,15 @@ if IS_TEST:
 if len(sys.argv) >= 2:
     CONF = sys.argv[1]
 
-
+regex = ure.compile('bcecb2e2b7a2cfd620((3[0-9])+)20b4ce2c20((3[0-9])+)20b4cebaf3b4a6c0ed')
 def log(*args, **kwargs):
     s = ' '.join(args)
     print(s)
     if DEBUG:
         with open(LOG_PATH, 'a') as f:
             f.write(s + '\n')
-    if 'bcecb2e2b7a2cfd6203320b4ce2c203320b4cebaf3b4a6c0ed' in s:
+    kicking_search = regex.search(s)
+    if kicking_search and kicking_search.group(1) == kicking_search.group(3):
         log('[auto-relogin] Need to relogin now, or will be kicked!')
         raise NeedRelogin
 
